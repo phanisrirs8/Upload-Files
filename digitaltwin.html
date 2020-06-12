@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"><link href="/stylesheets/bootstrap.css" rel="stylesheet"><link href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.css" rel="stylesheet"><link href="/stylesheets/main.css" rel="stylesheet"><link href="/stylesheets/markups.css" rel="stylesheet"><script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script><style type="text/css">/* Chart.js */
+@-webkit-keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}@keyframes chartjs-render-animation{from{opacity:0.99}to{opacity:1}}.chartjs-render-monitor{-webkit-animation:chartjs-render-animation 0.001s;animation:chartjs-render-animation 0.001s;}</style><script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.7.1/dist/chartjs-plugin-streaming.min.js"></script><script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js"></script><script>DEMO_URN = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6Zm9yZ2UtZGlnaXRhbC10d2luL0pldF9FbmdpbmVfTW9kZWwuemlw'</script><title>Autodesk Forge: Digital Twin Demo</title><script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/extensions/ViewCubeUi/ViewCubeUi.js"></script><script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/extensions/BimWalk/BimWalk.js"></script><script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/extensions/Measure/Measure.js"></script><script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/extensions/Section/Section.js"></script><script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/extensions/LayerManager/LayerManager.js"></script><style type="text/css">/***
+ * view cube
+ */
+.viewcube, .viewcubeWrapper {
+  display: block;
+  position: absolute;
+  outline: none;
+  width: 170px;
+  height: 170px;
+  right: -1px;
+  top: -1px;
+  opacity: 0.7;
+  margin: 0;
+  -webkit-transition: opacity 0.2s ease;
+  -moz-transition: opacity 0.2s ease;
+  -ms-transition: opacity 0.2s ease;
+  -o-transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease; }
+
+.viewcubeWrapper {
+  pointer-events: none; }
+
+.viewcube {
+  pointer-events: auto; }
+-
+.rewindFrame {
+  background-color: #FFFFFF;
+  position: absolute;
+  height: 56px;
+  width: 56px;
+  z-index: 1002; }
+
+.dropDownMenu {
+  position: absolute;
+  min-width: 220px;
+  margin: 0;
+  z-index: 1001;
+  background-color: #FFFFFF;
+  font-family: sans-serif;
+  font-size: 14px;
+  list-style-type: none;
+  border: solid;
+  border-width: 1px;
+  border-color: #979797; }
+
+.dropDownMenuItem {
+  position: relative;
+  width: calc(100% - 24px);
+  height: 21px;
+  padding-left: 24px;
+  /* Pad room for checkboxes */
+  padding-top: 4px;
+  background-color: #FFFFFF;
+  cursor: pointer; }
+
+.dropDownMenuCheckbox {
+  position: relative;
+  width: calc(100% - 4px);
+  padding-top: 4px;
+  height: 21px;
+  margin-left: 4px;
+  background-color: #FFFFFF;
+  cursor: pointer; }
+
+.dropDownMenuCheck {
+  padding-top: 2px;
+  cursor: pointer; }
+
+.dropDownMenuCheckText {
+  position: relative;
+  padding-left: 2px;
+  margin: 0;
+  cursor: pointer; }
+
+.dropDownMenuItemDisabled {
+  color: #999999;
+  position: relative;
+  width: calc(100% - 5px);
+  height: 23px;
+  background-color: #FFFFFF;
+  cursor: pointer; }
+
+.dropDownMenuItem:hover {
+  background-color: #E7EEF6; }
+
+.dropDownMenuCheckbox:hover {
+  background-color: #E7EEF6; }
+
+.textBox {
+  font-size: 15px;
+  background-color: #000;
+  opacity: 0.6;
+  padding: 2px 10px;
+  border-radius: 2px;
+  position: fixed;
+  display: none;
+  font-family: Monospace;
+  color: #fff;
+  z-index: 1000; }
+
+#colorCode {
+  position: absolute;
+  left: 0px;
+  top: 0px; }
+
+#text, #steeringWheel {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  z-index: 900; }
+
+.homeViewWrapper {
+  display: block;
+  outline: none;
+  margin: 18px 0px 0px -20px;
+  opacity: 0.7;
+  width: 24px;
+  height: 24px;
+  background-image: url(data:image/png;base64,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);
+  cursor: pointer;
+  pointer-events: auto; }
+
+.homeViewWrapper:hover {
+  opacity: 1; }
+
+.homeViewWrapper.no-viewcube {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  margin: 0; }
+
+.homeViewMenu {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 28px;
+  background-color: #FFFFFF;
+  border: 1px solid #979797;
+  z-index: 1; }
+
+.homeViewMenuItem {
+  padding: 5px 20px;
+  font-family: sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 2; }
+
+.homeViewMenuItem:hover {
+  background-color: #E7EEF6; }
+
+.homeViewWrapper .homeViewMenuHandle {
+  display: none;
+  position: relative;
+  left: 18px;
+  top: 18px; }
+</style><style type="text/css">.adsk-viewing-viewer .bimwalk .speed {
+  min-width: 0;
+  min-height: 0;
+  display: block;
+  position: absolute;
+  left: calc(50% - 83px);
+  top: 30px;
+  width: 160px;
+  height: 34px;
+  opacity: 0;
+  transform: translate(0, 10px);
+  pointer-events: none;
+  webkit-transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  -moz-transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  -ms-transition: opacity 0.5 ease-in-out, transform 0.5s ease-in-out;
+  -o-transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; }
+
+.adsk-viewing-viewer .bimwalk .speed-text {
+  padding-top: 8px; }
+
+.adsk-viewing-viewer .bimwalk .speed.open {
+  opacity: 1.0;
+  pointer-events: all;
+  transform: translate(0, 0); }
+
+.adsk-viewing-viewer .bimwalk .tooltip-info {
+  display: block;
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  top: 10px;
+  opacity: 0;
+  width: 30px;
+  height: 30px;
+  background-color: rgba(34, 34, 34, 0.4);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+  pointer-events: none; }
+
+.adsk-viewing-viewer .bimwalk .info-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 2.5px 2.5px 2.5px 2.5px;
+  background: url("data:image/svg+xml,%3C?xml version='1.0' encoding='UTF-8' standalone='no'?%3E %3Csvg width='24px' height='24px' viewBox='0 0 24 24' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E %3Ctitle%3Eicon-information%3C/title%3E %3Cdesc%3ECreated with Sketch.%3C/desc%3E %3Cdefs%3E%3C/defs%3E %3Cg id='Symbols' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E %3Cg id='icon-information' fill='%23ffffff'%3E %3Cpath d='M13.75,11.1484375 C13.75,10.796875 13.6328125,10.5625 13.515625,10.2109375 C13.28125,9.625 12.6953125,9.2734375 11.875,9.2734375 C11.171875,9.2734375 10.5859375,9.625 10.234375,10.2109375 C10.1171875,10.5625 10,10.796875 10,11.1484375 L10,18.296875 L10.234375,19.234375 C10.5859375,19.8203125 11.0546875,20.171875 11.875,20.171875 C12.6953125,20.171875 13.1640625,19.8203125 13.515625,19.234375 L13.75,18.296875 L13.75,11.1484375 L13.75,11.1484375 Z M13.75,5.7578125 C13.75,5.2890625 13.515625,4.8203125 13.1640625,4.46875 C12.8125,4.1171875 12.4609375,4 11.9921875,4 C11.5234375,4 11.0546875,4.1171875 10.703125,4.46875 C10.3515625,4.8203125 10.234375,5.2890625 10.234375,5.7578125 C10.234375,6.2265625 10.3515625,6.6953125 10.703125,7.046875 C11.0546875,7.3984375 11.5234375,7.515625 11.9921875,7.515625 C12.4609375,7.515625 12.9296875,7.3984375 13.1640625,7.046875 C13.6328125,6.6953125 13.75,6.2265625 13.75,5.7578125 Z' id='Shape'%3E%3C/path%3E %3C/g%3E %3C/g%3E %3C/svg%3E");
+  background-size: contain; }
+
+.adsk-viewing-viewer .bimwalk .tooltip-info.open {
+  opacity: 0.7;
+  pointer-events: all; }
+
+.adsk-viewing-viewer .bimwalk .tooltip-info:hover {
+  opacity: 1.0; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: auto;
+  z-index: 6; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip--open {
+  opacity: 1.0;
+  pointer-events: all; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip * {
+  box-sizing: border-box !important; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 620px;
+  height: 520px;
+  transform: translate(-50%, -50%); }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__title {
+  font-size: 16px;
+  font-weight: bold;
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
+  line-height: 19px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__close {
+  position: absolute;
+  top: 5px;
+  right: -30px;
+  cursor: pointer; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__row {
+  clear: left;
+  height: 135px;
+  margin-bottom: 5px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip {
+  border-radius: 5px;
+  padding: 28px 0;
+  width: 100%;
+  position: relative;
+  text-align: center;
+  font-size: 0;
+  height: 135px;
+  display: block;
+  float: left; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip + .c-bimwalk-tooltip__tip {
+  margin-left: 5px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__subtitle {
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  font-size: 14px;
+  font-weight: bold; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__instruction {
+  position: absolute;
+  height: 31px;
+  left: 14px;
+  bottom: 6px;
+  font-size: 12px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--walk {
+  padding: 26px 14px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--walk svg {
+  height: 79px;
+  display: inline-block;
+  margin: 0 26px; }
+
+.adsk-viewing-viewer .bimwalk .bimwalk-tooltip-or {
+  font-size: 12px;
+  font-weight: bold;
+  position: absolute;
+  bottom: 27px;
+  left: 50%;
+  transform: translateX(-50%); }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--updown {
+  padding: 53px 0 45px;
+  width: 307px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--updown svg {
+  height: 37px;
+  display: block;
+  margin: 0 auto; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--run {
+  padding: 53px 0 45px;
+  width: 308px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__shift {
+  height: 37px;
+  display: inline-block;
+  margin: 0;
+  vertical-align: middle; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__plus {
+  width: 11px;
+  display: inline-block;
+  margin: 0 16px 0 19px;
+  vertical-align: middle; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__direction {
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-block;
+  position: relative;
+  top: 4px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--teleport {
+  width: 203px;
+  padding: 45px 0 44px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--teleport svg {
+  height: 46px;
+  display: block;
+  margin: 0 auto; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--look {
+  width: 204px;
+  padding: 37px 0; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--look svg {
+  height: 56px;
+  display: block;
+  margin: 0 auto; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--speed {
+  width: 203px;
+  padding: 55px 0 45px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__tip--speed svg {
+  height: 36px;
+  display: block;
+  margin: 0 auto; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__actions {
+  text-align: center;
+  margin-top: 35px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__action {
+  display: inline-block;
+  width: 240px; }
+
+.adsk-viewing-viewer .bimwalk .c-bimwalk-tooltip__action + .c-bimwalk-tooltip__action {
+  margin-left: 1px; }
+</style><style type="text/css">.adsk-viewing-viewer .mobile-joystick.visible {
+  display: block; }
+
+.adsk-viewing-viewer .mobile-joystick {
+  display: none;
+  position: fixed;
+  width: 0px;
+  height: 0px;
+  z-index: 10; }
+
+.adsk-viewing-viewer .mobile-joystick-handle.focus {
+  background: white; }
+
+.adsk-viewing-viewer .mobile-joystick-handle.transition {
+  transition: 0.2s; }
+
+.adsk-viewing-viewer .mobile-joystick-handle {
+  border-radius: 100%;
+  display: inherit;
+  position: fixed;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: -3px 3px 6px 0px rgba(0, 0, 0, 0.15); }
+
+.adsk-viewing-viewer .mobile-joystick-back-circle {
+  pointer-events: none;
+  display: inherit;
+  position: absolute;
+  border-radius: 100%;
+  background: rgba(95, 95, 95, 0.3);
+  border-color: rgba(255, 255, 255, 0.85);
+  border-width: 2px;
+  border-style: solid;
+  left: -3px;
+  top: -3px; }
+
+.adsk-viewing-viewer .mobile-joystick-arrow {
+  position: fixed;
+  opacity: 0.3;
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDQ5MS44NTggNDkxLjg1OCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNDkxLjg1OCA0OTEuODU4OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4Ij48Zz48Zz48cGF0aCBkPSJNNDkxLjg1OCw0NDIuNDYxYzAsMTMuOTMxLTExLjI5MywyNS4yMjQtMjUuMjI0LDI1LjIyNEwyNDUuOTMsMzczLjA5N0wyNS4yMjQsNDY3LjY4NiAgICBDMTEuMjkyLDQ2Ny42ODYsMCw0NTYuMzkyLDAsNDQyLjQ2MUwyMjcuMDExLDMyLjU4YzAsMCwxOC45MTgtMTguOTE4LDM3LjgzNCwwQzI4My43NjQsNTEuNDk5LDQ5MS44NTgsNDQyLjQ2MSw0OTEuODU4LDQ0Mi40NjF6IiBmaWxsPSIjRkZGRkZGIi8+PC9nPjxnPjwvZz48Zz48L2c+PGc+PC9nPjxnPjwvZz48Zz48L2c+PGc+PC9nPjxnPjwvZz48Zz48L2c+PGc+PC9nPjxnPjwvZz48Zz48L2c+PGc+PC9nPjxnPjwvZz48Zz48L2c+PGc+PC9nPjwvZz48Zz48L2c+PGc+PC9nPjxnPjwvZz48Zz48L2c+PGc+PC9nPjxnPjwvZz48Zz48L2c+PGc+PC9nPjxnPjwvZz48Zz48L2c+PGc+PC9nPjxnPjwvZz48Zz48L2c+PGc+PC9nPjxnPjwvZz48L3N2Zz4=);
+  background-size: contain; }
+
+.adsk-viewing-viewer .mobile-joystick-arrow.arrow-up {
+  /*left: 63px;
+    top: 5px;*/ }
+
+.adsk-viewing-viewer .mobile-joystick-arrow.arrow-right {
+  left: 120px;
+  top: 63px;
+  transform: rotate(90deg); }
+
+.adsk-viewing-viewer .mobile-joystick-arrow.arrow-down {
+  left: 63px;
+  top: 120px;
+  transform: rotate(180deg); }
+
+.adsk-viewing-viewer .mobile-joystick-arrow.arrow-left {
+  left: 5px;
+  top: 63px;
+  transform: rotate(270deg); }
+</style><style type="text/css">/* hover shouldn't work on mobile devices */
+.adsk-viewing-viewer .measure-length:hover.measure-length.enable-hover {
+  box-shadow: 0 0 16px 3px rgba(0, 117, 210, 0.7);
+  -webkit-box-shadow: 0 0 16px 3px rgba(0, 117, 210, 0.7);
+  -moz-box-shadow: 0 0 16px 3px rgba(0, 117, 210, 0.7); }
+
+.adsk-viewing-viewer .measure-length {
+  display: none;
+  position: absolute;
+  height: 19px;
+  left: 0px;
+  top: 0px;
+  padding: 2px 0 2px 0;
+  background-color: #009bff;
+  box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.25);
+  color: #f4f4f4;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 8px;
+  pointer-events: none;
+  cursor: pointer;
+  z-index: 2;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+
+.adsk-viewing-viewer .measure-length.visible {
+  display: block; }
+
+.adsk-viewing-viewer .measure-length.fetching-topology {
+  background-color: rgba(34, 34, 34, 0.8);
+  box-shadow: 0 0.5px 1.5px 0 rgba(0, 0, 0, 0.3); }
+
+.adsk-viewing-viewer .measure-length-text {
+  display: inline-block;
+  margin: 0 5px 0 5px;
+  vertical-align: middle;
+  font-size: 16px;
+  pointer-events: none; }
+
+.adsk-viewing-viewer .measure-delta-text {
+  margin: 0 5px 0 5px;
+  align-self: center;
+  font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  height: 16px;
+  line-height: 16px;
+  vertical-align: middle;
+  pointer-events: none; }
+
+.adsk-viewing-viewer .measure-length-button {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  float: right;
+  color: #FFFFFF;
+  opacity: 0.7; }
+
+.adsk-viewing-viewer .measure-length-button:hover {
+  background-color: rgba(166, 194, 255, 0.7);
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
+
+/* hover shouldn't work on mobile devices */
+.adsk-viewing-viewer .measure-label:hover.measure-label.enable-hover,
+.adsk-viewing-viewer .measure-label.on-edit {
+  box-shadow: 0 0 4px 4px #0d69ca;
+  -webkit-box-shadow: 0 0 4px 4px #0d69ca;
+  -moz-box-shadow: 0 0 4px 4px #0d69ca; }
+
+.adsk-viewing-viewer .measure-label.editable {
+  pointer-events: all; }
+
+.adsk-viewing-viewer .measure-label {
+  display: none;
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  cursor: move;
+  pointer-events: none;
+  border-radius: 100px; }
+
+.adsk-viewing-viewer .measure-label-hit-area {
+  display: inline-block;
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  left: -22px;
+  top: -22px;
+  border-radius: 100px;
+  z-index: 2; }
+
+.adsk-viewing-viewer .measure-label-icon {
+  display: inline-block;
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  left: -2px;
+  top: -2px;
+  background-color: #009bff;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #FFFFFF;
+  border-radius: 100px;
+  box-shadow: 0 2px 5px 0 #182A3D;
+  z-index: 2; }
+
+.adsk-viewing-viewer .measure-label.visible {
+  display: block; }
+
+.adsk-viewing-viewer .measure-label-text {
+  display: inline-block;
+  margin: 0px 5px 0px 5px;
+  vertical-align: middle; }
+
+.adsk-viewing-viewer .measure-horizontal-divider {
+  height: 1px;
+  border-top: 1px solid rgba(200, 200, 200, 0.8); }
+
+.adsk-viewing-viewer .measure-submenu-select {
+  display: block;
+  position: relative;
+  width: calc(100% - 40px);
+  padding: 10px 20px 0px 20px;
+  opacity: 0.3; }
+
+.adsk-viewing-viewer .option-drop-down:disabled {
+  opacity: 0.3; }
+
+.adsk-viewing-viewer .measure-submenu-selectlabel {
+  position: relative;
+  display: inline-block;
+  padding-right: 20px;
+  padding-bottom: 4px; }
+
+/*.measure-result {*/
+/*display: inline-block;*/
+/*padding: 10px 0px  10px 20px;*/
+/*}*/
+.adsk-viewing-viewer .measure-results {
+  position: relative;
+  display: block;
+  padding: 5px 0px  10px 30px; }
+
+.adsk-viewing-viewer .measure-result-label {
+  display: inline-block;
+  padding-right: 10px; }
+
+.adsk-viewing-viewer .measure-result-number {
+  display: inline-block; }
+
+.adsk-viewing-viewer .measure-delta-collapse {
+  position: absolute;
+  right: 20px;
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.12);
+  margin: 0px 4px 0px 4px;
+  padding: 0px 4px 0px 4px;
+  cursor: pointer;
+  text-align: center; }
+
+.adsk-viewing-viewer .measure-delta-collapse:hover {
+  background-color: rgba(166, 194, 255, 0.7);
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
+
+.adsk-viewing-viewer .measure-selection-repick {
+  position: absolute;
+  right: 20px;
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.12);
+  margin: 4px 4px 4px 4px;
+  padding: 4px 4px 4px 4px;
+  cursor: pointer;
+  text-align: center; }
+
+.adsk-viewing-viewer .measure-selection-repick:hover {
+  background-color: rgba(166, 194, 255, 0.7);
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
+
+.adsk-viewing-viewer .measure-restart {
+  margin: 10px 20px 15px 20px;
+  padding: 6px 10px 6px 10px;
+  width: calc(100% - 55px);
+  cursor: pointer;
+  text-align: center;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px; }
+
+.adsk-viewing-viewer .docking-panel:hover .measure-restart {
+  background-color: rgba(255, 255, 255, 0.12); }
+
+.adsk-viewing-viewer .docking-panel .measure-restart:hover {
+  background-color: rgba(166, 194, 255, 0.7);
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
+
+.adsk-viewing-viewer .measure-panel-title {
+  padding-top: 0px;
+  padding-left: 20px;
+  margin-top: 10px; }
+
+.adsk-viewing-viewer .measure-panel-title:hover {
+  cursor: pointer; }
+
+.adsk-viewing-viewer .measure-panel-title.collapsed {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkEwMDhBMzY4QTYyODExRTM5REY0Q0MwMTM3MTVFOTMzIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkEwMDhBMzY5QTYyODExRTM5REY0Q0MwMTM3MTVFOTMzIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QTAwOEEzNjZBNjI4MTFFMzlERjRDQzAxMzcxNUU5MzMiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QTAwOEEzNjdBNjI4MTFFMzlERjRDQzAxMzcxNUU5MzMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6WHWu4AAAAcElEQVR42mL8//8/AzmAiYFMgEtjGSFDcUmGAfEEIOYix6lWQLwUiGXJ8SNI00IgNiIncPiAeCoQ+5ITqsxQA+CAhQhN34C4AoiPkaLxGRAXAfEdUvx4DohjsGkCA1CSw4LrgZgVhxwYM9I9rQIEGACZNDs01yUXlAAAAABJRU5ErkJggg==);
+  background-repeat: no-repeat; }
+
+.adsk-viewing-viewer .measure-panel-title.expanded {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkE3QzFFQUQ1QTYyODExRTM5NzE2RjcyN0QxQjg0QTREIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkE3QzFFQUQ2QTYyODExRTM5NzE2RjcyN0QxQjg0QTREIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QTdDMUVBRDNBNjI4MTFFMzk3MTZGNzI3RDFCODRBNEQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QTdDMUVBRDRBNjI4MTFFMzk3MTZGNzI3RDFCODRBNEQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6XuY60AAAARklEQVR42mL8//8/AzmAiYFMQBeNqSg8kB+JwKlAfAZZjIlIm9JJdSpWTYQ04tSETyNeTbg0EtSETSNRmkCAcegkOYAAAwDGjDZHvY373AAAAABJRU5ErkJggg==);
+  background-repeat: no-repeat; }
+
+.adsk-viewing-viewer .adsk-viewing-viewer .measure-table td {
+  padding: 10px 0px  10px 20px; }
+
+.adsk-viewing-viewer .measure-selection-one-label {
+  display: inline-block;
+  margin: 18px 18px 18px 18px;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  float: left;
+  padding: 2px;
+  background-color: #0033FF;
+  border-radius: 10px;
+  opacity: 0.6; }
+
+.adsk-viewing-viewer .measure-selection-two-label {
+  display: inline-block;
+  margin: 18px 18px 18px 18px;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  float: left;
+  padding: 2px;
+  background-color: #0033FF;
+  border-radius: 10px;
+  opacity: 0.6; }
+
+.adsk-viewing-viewer .measure-repick {
+  display: inline-block;
+  cursor: default;
+  margin: 20px 20px 20px 20px;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  float: right;
+  opacity: 0.5; }
+
+.adsk-viewing-viewer .measure-repick:hover {
+  opacity: 1; }
+
+.adsk-viewing-viewer .measure-selection-result {
+  display: inline-block;
+  margin: 21px 0px 21px 0px; }
+
+.adsk-viewing-viewer .measure-distance-icon {
+  display: inline-block;
+  margin: 20px 2px 20px 2px;
+  font-size: 52px;
+  color: #FF9900;
+  float: left; }
+
+.adsk-viewing-viewer .measure-angle-icon {
+  display: inline-block;
+  margin: 20px 2px 20px 2px;
+  font-size: 52px;
+  color: #FF9900;
+  float: left; }
+
+.adsk-viewing-viewer .adsk-viewing-viewer .measure-result {
+  font-size: 20px;
+  color: #FF9900;
+  display: inline-block;
+  margin: 38px 0px 38px 0px; }
+
+.adsk-viewing-viewer .measure-initial {
+  font-size: 20px;
+  display: inline-block;
+  margin: 38px 0px 38px 56px; }
+
+.adsk-viewing-viewer .measure-settings-button {
+  cursor: default;
+  position: relative;
+  top: 20px;
+  right: 20px;
+  width: 16px;
+  height: 16px;
+  font-size: 18px;
+  float: right;
+  opacity: 0.5; }
+
+.adsk-viewing-viewer .measure-settings-button:hover {
+  opacity: 1; }
+
+.adsk-viewing-viewer .measure-delta-button {
+  position: relative;
+  top: 56px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  float: right;
+  opacity: 0.5;
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg); }
+
+.adsk-viewing-viewer .measure-delta-button.rotated {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg); }
+
+.adsk-viewing-viewer .measure-delta-button:hover {
+  opacity: 1; }
+
+.adsk-viewing-viewer .measure-delta-result {
+  display: inline-block;
+  margin: 0px 0px 20px 0px;
+  padding: 0px 0px 0px 56px; }
+
+.adsk-viewing-viewer .measure-label-axis {
+  display: none;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 0px;
+  top: 0px;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  pointer-events: none; }
+
+.adsk-viewing-viewer .measure-label-axis-icon.X {
+  background-color: #EC4545; }
+
+.adsk-viewing-viewer .measure-label-axis-icon.Y {
+  background-color: #45C345; }
+
+.adsk-viewing-viewer .measure-label-axis-icon.Z {
+  background-color: #5757DA; }
+
+.adsk-viewing-viewer .measure-label-axis-icon {
+  width: 20px;
+  height: 18px;
+  color: #f4f4f4;
+  border-radius: 8px 0 0 8px;
+  font-size: 12px;
+  padding-top: 4px;
+  line-height: 15px;
+  text-align: center; }
+
+/* hover shouldn't work on mobile devices */
+.adsk-viewing-viewer .measure-label-axis-delta.enableTransition {
+  transition: opacity 0.1s linear; }
+
+.adsk-viewing-viewer .measure-label-axis-delta {
+  display: none;
+  position: absolute;
+  font-size: 18px;
+  left: 0px;
+  top: 0px;
+  background-color: #ffffff;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: 8px;
+  box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.25); }
+
+.adsk-viewing-viewer .measure-label-axis.visible {
+  display: block; }
+
+.adsk-viewing-viewer .measure-label-axis-delta.visible {
+  display: flex; }
+
+.adsk-viewing-viewer .measure-label-axis-x {
+  color: #EC4545; }
+
+.adsk-viewing-viewer .measure-label-axis-y {
+  color: #45C345; }
+
+.adsk-viewing-viewer .measure-label-axis-z {
+  color: #5757DA; }
+
+.adsk-viewing-viewer .magnifying-glass.visible {
+  display: block; }
+
+.adsk-viewing-viewer .magnifying-glass {
+  position: absolute;
+  display: none;
+  -moz-border-radius: 100%;
+  -webkit-border-radius: 100%;
+  border-radius: 100%;
+  background: transparent;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+  z-index: 4; }
+
+.adsk-viewing-viewer .measure-fetching-topology {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='10' height='10' viewBox='0 0 10 10'%3E %3Cdefs%3E %3ClinearGradient id='linear-gradient' y1='5' x2='10' y2='5' gradientUnits='userSpaceOnUse'%3E %3Cstop offset='0' stop-color='%23fff' stop-opacity='0'/%3E %3Cstop offset='1' stop-color='%23fff'/%3E %3C/linearGradient%3E %3C/defs%3E %3Ctitle%3EAsset 6%3C/title%3E %3Cg id='Layer_2' data-name='Layer 2'%3E %3Cg id='finals_24px'%3E %3Cpath d='M5,10A5,5,0,0,1,0,5,1.2,1.2,0,0,1,2.3,5,2.7,2.7,0,1,0,5,2.3,1.2,1.2,0,0,1,5,0,5,5,0,0,1,5,10Z' fill='url(%23linear-gradient)'/%3E %3C/g%3E %3C/g%3E %3C/svg%3E");
+  margin: 3px 0px -2px 3px;
+  animation: measure-topology-fetching-anim 1.4s infinite linear;
+  -webkit-animation: measure-topology-fetching-anim 1.4s infinite linear; }
+
+@keyframes measure-topology-fetching-anim {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+
+@-webkit-keyframes measure-topology-fetching-anim {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); } }
+
+.adsk-viewing-viewer .docking-panel.measure-settings-popup {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  bottom: 120%;
+  box-sizing: border-box;
+  text-align: left;
+  position: absolute;
+  padding-top: 15px;
+  padding-bottom: 15px; }
+
+.adsk-viewing-viewer .adsk-toolbar-vertical .docking-panel.measure-settings-popup {
+  right: 120%;
+  bottom: unset;
+  height: max-content;
+  width: max-content; }
+
+.adsk-viewing-viewer .docking-panel.measure-settings-popup .adsk-lmv-tftable tr.switch-slider-row td {
+  width: auto;
+  padding-bottom: 0px;
+  padding-top: 0px;
+  vertical-align: inherit; }
+
+.adsk-viewing-viewer .docking-panel.measure-settings-popup.hide {
+  display: none; }
+
+.adsk-viewing-viewer .measure-settings-popup tbody {
+  top: 15px; }
+
+.adsk-toolbar .measure-toolbar-seperator {
+  height: 18px;
+  width: 1px;
+  background-color: #999;
+  float: left;
+  margin: 16px 5px; }
+
+.adsk-toolbar.adsk-toolbar-vertical .measure-toolbar-seperator {
+  height: 1px;
+  width: 18px;
+  margin: 5px 16px; }
+
+.adsk-viewing-viewer .measure-selection-area {
+  display: block;
+  position: absolute;
+  cursor: pointer;
+  z-index: 1;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+</style><style type="text/css">@font-face {
+  font-family: 'calibration-icon';
+  src: url("data:application/octet-stream;base64,d09GRgABAAAAAAtYAA8AAAAAE7QAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABWAAAADsAAABUIIwleU9TLzIAAAGUAAAAQgAAAFZWgGFpY21hcAAAAdgAAABOAAABcAGIBM1jdnQgAAACKAAAABMAAAAgBtX/BGZwZ20AAAI8AAAFkAAAC3CKkZBZZ2FzcAAAB8wAAAAIAAAACAAAABBnbHlmAAAH1AAAAOQAAADkZyzZ8WhlYWQAAAi4AAAAMQAAADYL0YfIaGhlYQAACOwAAAAcAAAAJAc7A1VobXR4AAAJCAAAAAgAAAAIBvL//2xvY2EAAAkQAAAABgAAAAYAcgAAbWF4cAAACRgAAAAgAAAAIADpC8puYW1lAAAJOAAAAXcAAALNzJ0cHnBvc3QAAAqwAAAAKgAAADsMvKbDcHJlcAAACtwAAAB6AAAAhuVBK7x4nGNgZGBg4GIwYLBjYMpJLMlj4HNx8wlhkGJgYYAAkDwymzEnMz2RgQPGA8qxgGkOIGaDiAIAKVkFSAB4nGNgZK5knMDAysDAVMW0h4GBoQdCMz5gMGRkAooysDIzYAUBaa4pDA4MiQyJzEH/sxiimIMYpgGFGUFyAM95CpgAAHicY2BgYGVgYGAGYh0gZmFgYAxhYGQAAT+gKCNYnJmBCyzOwqAEVsMCFk/8/x9OMoJ0gkQZ2RhoDxjpYAclgAdMykB54LCCYkYA4LUHVgAAeJxjYEADEhDIHPQ/C4QBEmwD3QB4nK1WaXfTRhQdeUmchCwlCy1qYcTEabBGJmzBgAlBsmMgXZytlaCLFDvpvvGJ3+Bf82Tac+g3flrvGy8kkLTncJqTo3fnzdXM22USWpLYC+uRlJsvxdTWJo3sPAnphk3LUXwoO3shZYrJ3wVREK2W2rcdh0REIlC1rrBEEPseWZpkfOhRRsu2pFdNyi096S5b40G9Vd9+GjrKsTuhpGYzdGg9siVVGFWiSKY9UtKmZaj6K0krvL/CzFfNUMKITiJpvBnG0EjeG2e0ymg1tuMoimyy3ChSJJrhQRR5lNUS5+SKCQzKB82Q8sqnEeXD/Iis2KOcVrBLttP8vi95p3c5P7Ffb1G25EAfyI7s4Ox0JV+EW1th3LST7ShUEXbXd0Js2exU/2aP8ppGA7crMr3QjGCpfIUQKz+hzP4hWS2cT/mSR6NaspETQetlTuxLPoHW44gpcc0YWdDd0QkR1P2SMwz2mD4e/PHeKZYLEwJ4HMt6RyWcCBMpYXM0SdowcmAlZYsqqfWumDjldVrEW8J+7drRl85o41B3YjxbDx1bOVHJ8WhSp5lMndpJzaMpDaKUdCZ4zK8DKD+iSV5tYzWJlUfTOGbGhEQiAi3cS1NBLDuxpCkEzaMZvbkbprl2LVqkyQP13KP39OZWuLnTU9oO9LNGf1anYjrYC9PpaeQv8Wna5SJF6frpGX5M4kHWAjKRLTbDlIMHb/0O0svXlhyF1wbY7u3zK6h91kTwpAH7G9AeT9UpCUyFmFWIVkBirWtZlsnVrBapyNR3Q5pWvqzTBIpyHBfHvoxx/V8zM5aYEr7fidOzIy49c+1LCNMcfJt1PZrXqcVyAXFmeU6nWZbv6zTH8gOd5lme1+kIS1unoyw/1GmB5Uc6HWN5QQuadN/BkIsw5AIOkDCEpQNDWF6CISwVDGG5CENYFmEIyyUYwvJjGMJyGYawvKxl1dRTSePamVgGbEJgYo4eucxF5WoquVRCu2hUakOeEm6VVBTPqn9loF488oY5sBZIl8iaXzHOlY9G5fjWFS1vGjtXwLHqbx+O9jnxUtaLhT8F/9XWVCW9Ys3Dk6vwG4aebCeqNql4dE2Xz1U9uv5fVFRYC/QbSIVYKMqybHBnIoSPOp2GaqCVQ8xszDy063XLmp/D/TcxQhZQ/fg3FBoL3INOWUlZ7eCs1dfbstw7g3I4EyxJMTfz+lb4IiOz0n6RWcqej3wecAWMSmXYagOtFbzZJzEPmd4kzwRxW1E2SNrYzgSJDRzzgHnznQQmYeqqDeRO4YYN+AVhbsF5J1yieqMsh+5F7PMopPxbp+JE9qhojMCz2Rthr+9Cym9xDCQ0+aV+DFQVoakYNRXQNFJuqAZfxtm6bULGDvQjKnbDsqziw8cW95WSbRmEfKSI1aOjn9Zeok6q3H5mFJfvnb4FwSA1MX9733RxkMq7WskyR20DU7calVPXmkPjVYfq5lH1vePsEzlrmm66Jx56X9Oq28HFXCyw9m0O0lImF9T1YYUNosvFpVDqZTRJ77gHGBYY0O9Qio3/q/rYfJ4rVYXRcSTfTtS30edgDPwP2H9H9QPQ92Pocg0uz/eaE59u9OFsma6iF+un6Dcwa625WboG3NB0A+IhR62OuMoNfKcGcXqkuRzpIeBj3RXiAcAmgMXgE921jOZTAKP5jDk+wOfMYdBkDoMt5jDYZs4awA5zGOwyh8Eecxh8wZx1gC+ZwyBkDoOIOQyeMCcAeMocBl8xh8HXzGHwDXPuA3zLHAYxcxgkzGGwr+nWMMwtXtBdoLZBVaADU09Y3MPiUFNlyP6OF4b9vUHM/sEgpv6o6faQ+hMvDPVng5j6i0FM/VXTnSH1N14Y6u8GMfUPg5j6TL8Yy2UGv4x8lwoHlF1sPufvifcP28VAuQABAAH//wAPAAP///+TAwoDUgAlAC4AMQBJQEYkAQIGBQFHFhUQDwQBRAAHBgAGBwBtCAQCAAMCAgEAAVwKAQYGBVYJAQUFDAZJJyYAADEwKyomLicuACUAJSMkFCQXCwUZKwEVDgEVFBcDIw4BHgE7AQcXPwEhHwE3JzMyNjQmKwEDNjU0Jic1BzIWFAYiJjQ2FxMhAVgoNA7ANAoNAg0KHh4LXEABjUBbDB4eCQ4OCTLADTMoLhMbGyYaGhOw/qEDUm8ORyweHP5EAQ0UDERnLn19LmdEDRQNAbwaICxHDm/CGyYaGiYbzv6qeJxjYGRgYABiNfd3DvH8Nl8ZuJlfAEUYrqQu/A+jgWAy8wvmICCXg4EJJAoAgCEOvwAAAHicY2BkYGAO+p8FJF/8/w8iGYAiKIAJAIvHBZcD6AAAAwr//wAAAAAAcgAAAAEAAAACADIAAwAAAAAAAgAWACYAcwAAAFoLcAAAAAB4nHWQy07CQBSG/5GLCokaTdw6KwMxlksiCxISEgxsdEMMW1NKaUtKh0wHEl7Dd/BhfAmfxZ92MAZim+l855szZ04HwDW+IZA/Txw5C5wxyvkEp+hZLtA/Wy6SXyyXUMWb5TL9u+UKHhBYruIGH6wgiueMFvi0LHAlLi2f4ELcWS7QP1ouknuWS7gVr5bL9J7lCiYitVzFvfgaqNVWR0FoZG1Ql+1mqyOnW6moosSNpbs2odKp7Mu5Sowfx8rx1HLPYz9Yx67eh/t54us0UolsOc29GvmJr13jz3bV003QNmYu51ot5dBmyJVWC98zTmjMqtto/D0PAyissIVGxKsKYSBRo61zbqOJFjqkKTMkM/OsCAlcxDQu1twRZisp4z7HnFFC6zMjJjvw+F0e+TEp4P6YVfTR6mE8Ie3OiDIv2ZfD7g6zRqQky3QzO/vtPcWGp7VpDXftutRZVxLDgxqS97FbW9B49E52K4a2iwbff/7vB+NphE8AeJxjYGKAAC4G7ICJkYmRmUEwOTEnM6kosSQzPy++PCOzJJWBAQBRdwcvAAB4nGPw3sFwIihiIyNjX+QGxp0cDBwMyQUbGVidNjEwMmiBGJu5mBg5ICw+BjCLzWkX0wGgNCeQze60i8EBwmZmcNmowtgRGLHBoSNiI3OKy0Y1EG8XRwMDI4tDR3JIBEhJJBBs5mFi5NHawfi/dQNL70YmBhcADHYj9AAA") format("woff");
+  font-weight: normal;
+  font-style: normal; }
+
+[class^="calibration-icon"], [class*=" calibration-icon"] {
+  font-family: 'calibration-icon';
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  padding-top: 2px;
+  speak: none;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.adsk-viewing-viewer .calibration-icon:before {
+  content: 'a'; }
+
+.adsk-viewing-viewer .calibration-panel {
+  left: calc(50% - 190px);
+  top: calc(50% - 145px);
+  width: 300px;
+  height: auto;
+  z-index: 4; }
+
+.adsk-viewing-viewer .measure-settings-popup .option-drop-down,
+.adsk-viewing-viewer .calibration-panel .option-drop-down {
+  width: 100%;
+  padding-right: 0px;
+  box-sizing: border-box; }
+
+.adsk-viewing-viewer .measure-settings-popup .adsk-lmv-tftable tr td,
+.adsk-viewing-viewer .calibration-panel .adsk-lmv-tftable tr td {
+  width: auto;
+  padding: 2px 15px 2px 0px; }
+
+.adsk-viewing-viewer .calibration-panel .adsk-lmv-tftable tr td input {
+  margin: 0px;
+  box-sizing: border-box;
+  width: 100%; }
+
+.adsk-viewing-viewer .measure-settings-popup .switch {
+  margin-left: 25px; }
+
+.adsk-viewing-viewer .measure-settings-popup .switch .slider {
+  width: 26px; }
+
+.adsk-viewing-viewer .calibration-textbox::-webkit-inner-spin-button,
+.adsk-viewing-viewer .calibration-textbox::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0; }
+
+.adsk-viewing-viewer .calibration-text {
+  text-align: left;
+  padding: 6px 10px 6px 10px;
+  margin: 20px 20px 14px 20px;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased; }
+
+.adsk-viewing-viewer .calibration-button {
+  margin-top: 15px; }
+
+.adsk-viewing-viewer .calibration-button-left {
+  width: calc(50% - 15px);
+  margin-right: 5px !important;
+  display: inline-block; }
+
+.adsk-viewing-viewer .calibration-button-right {
+  width: calc(50% - 15px);
+  margin-left: 5px !important;
+  display: inline-block; }
+
+.adsk-viewing-viewer .calibration-line {
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0; }
+
+.adsk-viewing-viewer .calibration-label {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+  text-align: 'center';
+  vertical-align: middle;
+  cursor: default;
+  padding: 2px;
+  color: #000000;
+  background: #FFFFFF;
+  border-radius: 10px;
+  -webkit-transform-origin: 50%  53%; }
+
+.adsk-viewing-viewer .calibration-label-text {
+  display: inline-block;
+  pointer-events: none;
+  text-align: 'center';
+  vertical-align: middle;
+  font-size: 12px;
+  cursor: default;
+  padding: 2px;
+  color: #000000;
+  background: #FFFFFF;
+  border-bottom: 1px dashed #000000;
+  text-decoration: none;
+  text-transform: uppercase;
+  -webkit-font-smoothing: antialiased; }
+
+.adsk-viewing-viewer .calibration-label-text:hover {
+  color: #039be5;
+  border-bottom: 1px dashed #039be5; }
+
+.adsk-viewing-viewer .calibration-label.visible {
+  display: block; }
+
+.adsk-viewing-viewer .calibration-endpoint:hover.calibration-endpoint.enable-hover,
+.adsk-viewing-viewer .calibration-endpoint.edit {
+  background-color: #039be5; }
+
+.adsk-viewing-viewer .calibration-endpoint:hover.calibration-endpoint.enable-hover > *,
+.adsk-viewing-viewer .calibration-endpoint.edit > * {
+  color: #ffffff; }
+
+.adsk-viewing-viewer .calibration-endpoint.editable {
+  pointer-events: all; }
+
+.adsk-viewing-viewer .calibration-endpoint {
+  display: none;
+  position: absolute;
+  cursor: move;
+  pointer-events: none;
+  width: 30px;
+  height: 30px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.24), 0 0 8px 0 rgba(0, 0, 0, 0.12);
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  border-radius: 50px;
+  justify-content: center;
+  align-items: center;
+  text-align: center; }
+
+.adsk-viewing-viewer .calibration-endpoint.visible {
+  display: block; }
+
+.adsk-viewing-viewer .calibration-endpoint-text {
+  display: inline-block;
+  font-size: 14px;
+  vertical-align: middle;
+  cursor: default;
+  margin: 5px 5px 5px 5px;
+  vertical-align: middle;
+  text-align: center;
+  color: #039be5;
+  text-decoration: none;
+  text-transform: uppercase;
+  pointer-events: none; }
+
+.adsk-viewing-viewer .calibration-buttons-wrapper {
+  text-align: center; }
+</style><script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/extensions/Snapping/Snapping.js"></script><style type="text/css">/**
+ * Section CSS
+ **/
+.sectionPanel {
+  line-height: 14px;
+  text-align: left;
+  z-index: 10; }
+
+.section-horizontal-divider {
+  height: 1px;
+  border-top: 1px solid rgba(200, 200, 200, 0.8); }
+
+.section-submenu-select {
+  display: block;
+  position: relative;
+  width: calc(100% - 40px);
+  padding: 10px 20px 0px 20px;
+  opacity: 0.3; }
+
+.section-panel:hover .section-submenu-select {
+  opacity: 0.8; }
+
+.section-submenu-selectlabel {
+  position: relative;
+  display: inline-block;
+  padding-right: 20px;
+  padding-bottom: 4px; }
+
+.section-restart {
+  margin: 10px 20px 15px 20px;
+  padding: 6px 10px 6px 10px;
+  width: calc(100% - 55px);
+  cursor: pointer; }
+
+.docking-panel:hover .section-restart {
+  background-color: rgba(255, 255, 255, 0.12); }
+
+.docking-panel .section-restart:hover {
+  background-color: rgba(166, 194, 255, 0.7);
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease; }
+</style><script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/extensions/CompGeom/CompGeom.js"></script><style type="text/css">.adsk-viewing-viewer .layers-panel {
+  left: 0px;
+  top: 0px;
+  min-width: 320px;
+  min-height: 100px;
+  height: calc(100% - 55px); }
+
+.adsk-viewing-viewer .layers-panel .visibility {
+  right: 40px;
+  top: 0px;
+  width: 25px;
+  height: 50px;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  background-position: 2px 19px;
+  background-repeat: no-repeat;
+  position: absolute;
+  cursor: pointer;
+  z-index: 1; }
+
+.adsk-viewing-viewer .layers-panel .visibility.dim {
+  background-position: 2px 16px; }
+
+.adsk-viewing-viewer .layers-panel .treeview {
+  height: 100%; }
+
+.adsk-viewing-viewer .layers-panel .exclude > lmvheader {
+  display: none; }
+
+.adsk-viewing-viewer .layers-panel .exclude {
+  padding-left: 0;
+  left: 0; }
+
+.adsk-viewing-viewer .layers-panel .treeview label {
+  padding-left: 17px; }
+</style></head>
+<body>
+    <div id="container"><div id="header"><img alt="Autodesk Forge Digital Twin Demo" src="/images/forge-logo-gray.png"><h>Digital Twin Demo</h></div><div id="viewer"><div class="adsk-viewing-viewer notouch dark-theme quality-text" style="width: 100%; height: 100%; overflow: hidden;"><div class="canvas-wrap"><div class="orbit-gizmo noselect" style="display: none;">
+<div class="outside"></div>
+<div class="ring"></div>
+<div class="layout-hor">
+<div class="edgemark-area"><div class="edgemark"></div></div>
+</div>
+<div class="layout-mid">
+<div class="layout-ver">
+<div class="edgemark-area"><div class="edgemark"></div></div>
+</div>
+<div class="circle">
+<div class="crosshair-area">
+<div class="crosshair-v"></div>
+<div class="crosshair-h"></div>
+</div>
+</div>
+<div class="layout-ver">
+<div class="edgemark-area"><div class="edgemark"></div></div>
+</div>
+</div>
+<div class="layout-hor">
+<div class="edgemark-area"><div class="edgemark"></div></div>
+</div>
+</div>
+<canvas width="588" height="843" tabindex="0" style="width: 471px; height: 675px; cursor: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAt1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8AAAAzMzP6+vri4uISEhKKioqtra2dnZ2EhIR9fX10dHRkZGQdHR3t7e3Hx8e5ubm1tbWoqKhWVlZKSko4ODgICAjv7+/o6OjMzMyxsbFOTk4pKSkXFxcEBAT29vbW1tZ6enpISEgLCwvhzeX+AAAAGXRSTlMANRO0nHRJHfnskIxQRKh89syDVwTWZjEJxPFEswAAAOFJREFUKM+1j+lygkAQhIflEAJe0Rw9u4CCeKKoSTTX+z9XoMJWWeX+ssrvZ3f19DQ5zOw/0DUMQPlmQ72bE2adBp8/Rp3CQUi3ILx+bxj4fjDs9T1Bmo6bbPPN8aDU4bjJt4nb+de789kSFyxn826jW3ICLNZZKU8nWWbrBTCRVm04U8TpjquRFf1Go0d7l8aYOrUR7FGEFr1S9LGymwthgX2gE/Kl0cHPOtF2xOWZ5QpIC93RflW4InkDoPRXesd5LJIMQPzV7tCMa7f6BvhJL79AVDmYTNQ1NhnxbI/uwB8H5Bjd4zQPBAAAAABJRU5ErkJggg==), auto;" data-viewer-canvas="true"></canvas></div><div class="spinner" style="display: none;"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div><div class="progressbg" style="visibility: hidden;"><div class="progressfg" style="width: 96.07%;"></div></div><div class="adsk-control adsk-toolbar" id="guiviewer3d-toolbar"><div class="adsk-control adsk-control-group" id="navTools"><div class="adsk-control adsk-button active" id="toolbar-orbitTools" style="display: none;"><div class="adsk-control inactive adsk-button-arrow" id="toolbar-orbitToolsarrow"><div class="adsk-button-icon"></div></div><div class="adsk-control adsk-control-group toolbar-vertical-group adsk-hidden" id="toolbar-orbitToolsSubMenu"><div class="clickoff" style="position:fixed; top:0; left:0; width:100vw; height:100vh;"></div><div class="adsk-control adsk-button inactive" id="toolbar-freeOrbitTool"><div class="adsk-button-icon adsk-icon-orbit-free"></div><div class="adsk-control-tooltip" id="toolbar-freeOrbitTool-tooltip" data-i18n="Free orbit" tooltiptext="Free orbit">Free orbit</div></div><div class="adsk-control adsk-button inactive" id="toolbar-orbitTool"><div class="adsk-button-icon adsk-icon-orbit-constrained"></div><div class="adsk-control-tooltip" id="toolbar-orbitTool-tooltip" data-i18n="Orbit" tooltiptext="Orbit">Orbit</div></div></div><div class="adsk-button-icon adsk-icon-orbit-constrained"></div><div class="adsk-control-tooltip" id="toolbar-orbitTools-tooltip" data-i18n="Orbit" tooltiptext="Orbit">Orbit</div></div><div class="adsk-control adsk-button inactive" id="toolbar-panTool" style="display: none;"><div class="adsk-button-icon adsk-icon-pan"></div><div class="adsk-control-tooltip" id="toolbar-panTool-tooltip" data-i18n="Pan" tooltiptext="Pan">Pan</div></div><div class="adsk-control adsk-button inactive" id="toolbar-zoomTool" style="display: none;"><div class="adsk-button-icon adsk-icon-zoom"></div><div class="adsk-control-tooltip" id="toolbar-zoomTool-tooltip" data-i18n="Zoom" tooltiptext="Zoom">Zoom</div></div><div class="adsk-control adsk-button inactive" id="toolbar-bimWalkTool"><div class="adsk-button-icon adsk-icon-first-person"></div><div class="adsk-control-tooltip" id="toolbar-bimWalkTool-tooltip" data-i18n="First person" tooltiptext="First person">First person</div></div><div class="adsk-control adsk-button inactive" id="toolbar-cameraSubmenuTool" style="display: none;"><div class="adsk-control inactive adsk-button-arrow" id="toolbar-cameraSubmenuToolarrow"><div class="adsk-button-icon"></div></div><div class="adsk-control adsk-control-group toolbar-vertical-group adsk-hidden" id="toolbar-cameraSubmenuToolSubMenu"><div class="clickoff" style="position:fixed; top:0; left:0; width:100vw; height:100vh;"></div><div class="adsk-control adsk-button inactive" id="toolbar-fitToViewTool" style="display: block;"><div class="adsk-button-icon adsk-icon-fit-to-view"></div><div class="adsk-control-tooltip" id="toolbar-fitToViewTool-tooltip" data-i18n="Fit to view" tooltiptext="Fit to view">Fit to view (F)</div></div><div class="adsk-control adsk-button inactive" id="toolbar-focalLengthTool" style="display: block;"><div class="adsk-button-icon adsk-icon-fov"></div><div class="adsk-control-tooltip" id="toolbar-focalLengthTool-tooltip" data-i18n="Focal length" tooltiptext="Focal length">Focal length (Ctrl+Shift drag)</div></div><div class="adsk-control adsk-button inactive" id="toolbar-rollTool" style="display: block;"><div class="adsk-button-icon adsk-icon-roll"></div><div class="adsk-control-tooltip" id="toolbar-rollTool-tooltip" data-i18n="Roll" tooltiptext="Roll">Roll (Alt+Shift drag)</div></div></div><div class="adsk-button-icon adsk-icon-camera"></div><div class="adsk-control-tooltip" id="toolbar-cameraSubmenuTool-tooltip" data-i18n="Camera interactions" tooltiptext="Camera interactions">Camera interactions</div></div></div><div class="adsk-control adsk-control-group adsk-hidden" id="measureTools"><div class="adsk-control adsk-button inactive" id="toolbar-measureTool-simple-distance"><div class="adsk-button-icon adsk-icon-measure-distance-new"></div><div class="adsk-control-tooltip" id="toolbar-measureTool-simple-distance-tooltip" data-i18n="Distance" tooltiptext="Distance">Distance</div></div><div class="adsk-control adsk-button inactive" id="toolbar-measureTool-angle"><div class="adsk-button-icon adsk-icon-measure-angle-new"></div><div class="adsk-control-tooltip" id="toolbar-measureTool-angle-tooltip" data-i18n="Angle" tooltiptext="Angle">Angle</div></div><div class="adsk-control adsk-button inactive" id="toolbar-calibrationTool"><div class="adsk-button-icon adsk-icon-measure-calibration"></div><div class="adsk-control-tooltip" id="toolbar-calibrationTool-tooltip" data-i18n="Calibrate" tooltiptext="Calibrate">Calibrate</div></div><div class="measure-toolbar-seperator"></div><div class="adsk-control adsk-button inactive" id="toolbar-delete"><div class="adsk-button-icon adsk-icon-measure-trash"></div><div class="adsk-control-tooltip" id="toolbar-delete-tooltip" data-i18n="Delete measurement" tooltiptext="Delete measurement">Delete measurement</div></div><div class="docking-panel docking-panel-container-solid-color-b measure-settings-popup hide"><table class="adsk-lmv-tftable calibration-table"><tbody><tr><td><div data-i18n="Unit type">Unit type</div></td><td style="padding-right: 5px; padding-left: 5px;"><select class="option-drop-down" id="Unit type_dropdown"><option disabled="" style="display: none; visibility: hidden;" value="0" data-i18n="Unknown">Unknown</option><option value="1" data-i18n="Decimal feet">Decimal feet</option><option value="2" data-i18n="Feet and fractional inches">Feet and fractional inches</option><option value="3" data-i18n="Feet and decimal inches">Feet and decimal inches</option><option value="4" data-i18n="Decimal inches">Decimal inches</option><option value="5" data-i18n="Fractional inches">Fractional inches</option><option value="6" data-i18n="Meters">Meters</option><option value="7" data-i18n="Centimeters">Centimeters</option><option value="8" data-i18n="Millimeters">Millimeters</option><option value="9" data-i18n="Meters and centimeters">Meters and centimeters</option><option value="10" data-i18n="Points">Points</option></select></td></tr><tr><td><div data-i18n="Precision">Precision</div></td><td style="padding-right: 5px; padding-left: 5px;"><select class="option-drop-down" id="Precision_dropdown"><option value="0">0</option><option value="1">0.1</option><option value="2">0.01</option><option value="3">0.001</option><option value="4">0.0001</option><option value="5">0.00001</option></select></td></tr><tr class="switch-slider-row"><td><div data-i18n="Isolate measurement">Isolate measurement</div></td><td><label class="switch"><input id="Isolate measurement_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Enable free measure">Enable free measure</div></td><td><label class="switch"><input id="Enable free measure_check" type="checkbox"><div class="slider"></div></label></td></tr></tbody></table></div><div class="adsk-control adsk-button inactive" id="toolbar-settings"><div class="adsk-button-icon adsk-icon-measure-settings"></div><div class="adsk-control-tooltip" id="toolbar-settings-tooltip" data-i18n="Measure settings" tooltiptext="Measure settings">Measure settings</div></div><div class="adsk-control adsk-button inactive adsk-label-button" id="toolbar-measureTool-done"><div class="adsk-button-icon" style="display: none;"></div><div class="adsk-control-tooltip" id="toolbar-measureTool-done-tooltip" data-i18n="Done" tooltiptext="Done">Done</div><label>Done</label></div></div><div class="adsk-control adsk-control-group" id="modelTools"><div class="adsk-control adsk-button inactive" id="toolbar-measurementSubmenuTool"><div class="adsk-button-icon adsk-icon-measure"></div><div class="adsk-control-tooltip" id="toolbar-measurementSubmenuTool-tooltip" data-i18n="Measure" tooltiptext="Measure">Measure</div></div><div class="adsk-control adsk-button inactive" id="toolbar-sectionTool" style="display: none;"><div class="adsk-control inactive adsk-button-arrow" id="toolbar-sectionToolarrow"><div class="adsk-button-icon"></div></div><div class="adsk-control adsk-control-group toolbar-vertical-group adsk-hidden" id="toolbar-sectionToolSubMenu"><div class="clickoff" style="position:fixed; top:0; left:0; width:100vw; height:100vh;"></div><div class="adsk-control adsk-button inactive" id="toolbar-sectionTool-x"><div class="adsk-button-icon adsk-icon-plane-y"></div><div class="adsk-control-tooltip" id="toolbar-sectionTool-x-tooltip" data-i18n="Add X plane" tooltiptext="Add X plane">Add X plane</div></div><div class="adsk-control adsk-button inactive" id="toolbar-sectionTool-y"><div class="adsk-button-icon adsk-icon-plane-y"></div><div class="adsk-control-tooltip" id="toolbar-sectionTool-y-tooltip" data-i18n="Add Y plane" tooltiptext="Add Y plane">Add Y plane</div></div><div class="adsk-control adsk-button inactive" id="toolbar-sectionTool-z"><div class="adsk-button-icon adsk-icon-plane-z"></div><div class="adsk-control-tooltip" id="toolbar-sectionTool-z-tooltip" data-i18n="Add Z plane" tooltiptext="Add Z plane">Add Z plane</div></div><div class="adsk-control adsk-button inactive" id="toolbar-sectionTool-box"><div class="adsk-button-icon adsk-icon-box"></div><div class="adsk-control-tooltip" id="toolbar-sectionTool-box-tooltip" data-i18n="Add box" tooltiptext="Add box">Add box</div></div></div><div class="adsk-button-icon adsk-icon-section-analysis"></div><div class="adsk-control-tooltip" id="toolbar-sectionTool-tooltip" data-i18n="Section analysis" tooltiptext="Section analysis">Section analysis</div></div><div class="adsk-control adsk-button inactive" id="toolbar-explodeTool" style="display: block;"><div class="adsk-button-icon adsk-icon-explode"></div><div class="adsk-control-tooltip" id="toolbar-explodeTool-tooltip" data-i18n="Explode model" tooltiptext="Explode model">Explode model</div><div class="docking-panel docking-panel-container-solid-color-b explode-submenu" style="display:none"><input class="explode-slider" style="padding-top: 0px; padding-bottom: 0px; margin-top: 10px;" type="range" min="0" max="1" step="0.01" value="0"></div></div></div><div class="adsk-control adsk-control-group" id="settingsTools"><div class="adsk-control adsk-button inactive" id="toolbar-modelStructureTool"><div class="adsk-button-icon adsk-icon-structure"></div><div class="adsk-control-tooltip" id="toolbar-modelStructureTool-tooltip" data-i18n="Model browser" tooltiptext="Model browser">Model browser</div></div><div class="adsk-control adsk-button inactive" id="toolbar-propertiesTool"><div class="adsk-button-icon adsk-icon-properties"></div><div class="adsk-control-tooltip" id="toolbar-propertiesTool-tooltip" data-i18n="Properties" tooltiptext="Properties">Properties</div></div><div class="adsk-control adsk-button inactive" id="toolbar-settingsTool"><div class="adsk-button-icon adsk-icon-settings"></div><div class="adsk-control-tooltip" id="toolbar-settingsTool-tooltip" data-i18n="Settings" tooltiptext="Settings">Settings</div></div><div class="adsk-control adsk-button inactive" id="toolbar-fullscreenTool"><div class="adsk-button-icon adsk-icon-fullscreen"></div><div class="adsk-control-tooltip" id="toolbar-fullscreenTool-tooltip" data-i18n="Full screen" tooltiptext="Full screen">Full screen</div></div></div><div class="adsk-control adsk-control-group" id="CustomToolbar"><div class="adsk-control adsk-button inactive" id="HeatmapButton"><div class="adsk-button-icon fas fa-fire"></div><div class="adsk-control-tooltip" id="HeatmapButton-tooltip" data-i18n="Heatmaps" tooltiptext="Heatmaps">Heatmaps</div></div><div class="adsk-control adsk-button inactive" id="IssuesButton"><div class="adsk-button-icon fas fa-flag"></div><div class="adsk-control-tooltip" id="IssuesButton-tooltip" data-i18n="Issues" tooltiptext="Issues">Issues</div></div><div class="adsk-control adsk-button inactive" id="AnimationButton"><div class="adsk-button-icon fas fa-broadcast-tower"></div><div class="adsk-control-tooltip" id="AnimationButton-tooltip" data-i18n="Realtime Data Animation" tooltiptext="Realtime Data Animation">Realtime Data Animation</div></div></div></div><div class="docking-panel viewer-settings-panel" id="ViewerSettingsPanel0-0" style="left: 323.5px; top: 10px; height: 220px; display: none; position: absolute; min-width: 400px; max-width: 800px;"><div class="docking-panel-title" data-i18n="Settings">Settings</div><div class="docking-panel-close"></div><div class="docking-panel-container-solid-color-b settings-tabs docking-panel-delimiter-shadow"><ul><li class="performance tabselected selectedmouseout" id="ViewerSettingsPanel0-0-performancetab"><a><span data-i18n="Configuration">Configuration</span></a></li><li class="navigation" id="ViewerSettingsPanel0-0-navigationtab"><a><span data-i18n="Navigation">Navigation</span></a></li><li class="appearance" id="ViewerSettingsPanel0-0-appearance"><a><span data-i18n="Appearance">Appearance</span></a></li><li class="environment" id="ViewerSettingsPanel0-0-environment"><a><span data-i18n="Environment">Environment</span></a></li></ul></div><div class="docking-panel-scroll docking-panel-container-solid-color-a right" id="ViewerSettingsPanel0-0-scroll-container" style="height: calc(-110px + 100%);"><div class="settings-tabs-tables-container"><table class="settings-table adsk-lmv-tftable performance settings-selected-table" id="ViewerSettingsPanel0-0-performancetab-table"><tbody style="width: 100%; display: table;"><tr class="logical-group"><td colspan="3"><div data-i18n="Performance Optimization">Performance Optimization</div></td></tr><tr class="switch-slider-row"><td><div data-i18n="Smooth navigation">Smooth navigation</div></td><td><div data-i18n="Provides faster response(but degrades quality) while navigating">Provides faster response(but degrades quality) while navigating</div></td><td><label class="switch"><input id="Smooth navigation_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row no-storage"><td><div data-i18n="Progressive display">Progressive display</div></td><td><div data-i18n="Shows incremental updates of the view and allows for more responsive interaction with the model (some elements may flicker) This improves perceived waiting time">Shows incremental updates of the view and allows for more responsive interaction with the model (some elements may flicker). This improves perceived waiting time.</div></td><td><label class="switch"><input id="Progressive display_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="logical-group"><td colspan="3"><div data-i18n="Display">Display</div></td></tr><tr class="switch-slider-row"><td><div data-i18n="Ghost hidden objects">Ghost hidden objects</div></td><td><div data-i18n="Leave hidden objects slightly visible">Leave hidden objects slightly visible.</div></td><td><label class="switch"><input id="Ghost hidden objects_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row no-storage"><td><div data-i18n="Display Lines">Display lines</div></td><td><div data-i18n="Toggles display of line objects">Toggles display of line objects.</div></td><td><label class="switch"><input id="Display Lines_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row no-storage"><td><div data-i18n="Display Points">Display points</div></td><td><div data-i18n="Toggles display of point objects">Toggles display of point objects.</div></td><td><label class="switch"><input id="Display Points_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row no-storage"><td><div data-i18n="Display edges">Display edges</div></td><td><div data-i18n="Shows outline of model surfaces">Shows outline of model surfaces.</div></td><td><label class="switch"><input id="Display edges_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="logical-group"><td colspan="3"><div data-i18n="Selection">Selection</div></td></tr><tr class="no-storage"><td><div data-i18n="Selection Mode">Selection Mode</div></td><td style="padding-right: 5px; padding-left: 5px;"><select class="option-drop-down" id="Selection Mode_dropdown"><option value="0" data-i18n="Leaf Object">Leaf Object</option><option value="1" data-i18n="First Object">First Object</option><option value="2" data-i18n="Last Object">Last Object</option></select></td></tr></tbody></table><table class="settings-table adsk-lmv-tftable navigation" id="ViewerSettingsPanel0-0-navigationtab-table"><tbody style="width: 100%; display: table;"><tr class="logical-group"><td colspan="3"><div data-i18n="ViewCube">ViewCube</div></td></tr><tr class="switch-slider-row no-storage"><td><div data-i18n="Show ViewCube">Show ViewCube</div></td><td><div data-i18n="Toggles availability of the ViewCube navigation control">Toggles availability of the ViewCube navigation control.</div></td><td><label class="switch"><input id="Show ViewCube_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="ViewCube acts on pivot">ViewCube acts on pivot</div></td><td><div data-i18n="When enabled, the ViewCube orbits the view around the active pivot point When disabled, it orbits around the center of the view">When enabled, the ViewCube orbits the view around the active pivot point. When disabled, it orbits around the center of the view.</div></td><td><label class="switch"><input id="ViewCube acts on pivot_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="logical-group"><td colspan="3"><div data-i18n="Orbit">Orbit</div></td></tr><tr class="switch-slider-row no-storage"><td><div data-i18n="Fusion style orbit">Fusion-style orbit</div></td><td><div data-i18n="Enables Fusion-style orbit overlay and gives the ability to lock orbit axis">Enables Fusion-style orbit overlay and gives the ability to lock orbit axis.</div></td><td><label class="switch"><input id="Fusion style orbit_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Orbit past world poles">Orbit past world poles</div></td><td><div data-i18n="Allows view rotation to continue past the model’s North Pole">Allows view rotation to continue past the model’s North Pole.</div></td><td><label class="switch"><input id="Orbit past world poles_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="logical-group"><td colspan="3"><div data-i18n="Zoom">Zoom</div></td></tr><tr class="switch-slider-row"><td><div data-i18n="Zoom towards pivot">Zoom toward pivot</div></td><td><div data-i18n="When disabled, zooming operations are centered at the current cursor location">When disabled, zooming operations are centered at the current cursor location.</div></td><td><label class="switch"><input id="Zoom towards pivot_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Reverse mouse zoom direction">Reverse mouse zoom direction</div></td><td><div data-i18n="Toggles direction of zooming in and out">Toggles direction of zooming in and out.</div></td><td><label class="switch"><input id="Reverse mouse zoom direction_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Scroll Speed">Scroll Speed</div></td><td><div data-i18n="Changes sensitivity of the mouse scroll wheel when zooming">Changes sensitivity of the mouse scroll wheel when zooming</div></td><td></td></tr><tr class="switch-slider-row"><td><div style="display: none;" data-i18n="Scroll Speed">Scroll Speed</div></td><td><input id="Scroll Speed_slider" style="width: 85%;" type="range" min="0.1" max="3" step="0.1"></td><td><input id="Scroll Speed_stepper" style="width: 64px; display: none;" type="number" min="0.1" max="3" step="0.1"></td></tr><tr class="switch-slider-row"><td><div data-i18n="Drag Speed">Drag Speed</div></td><td><div data-i18n="Changes sensitivity of mouse movement with the zoom tool">Changes sensitivity of mouse movement with the zoom tool</div></td><td></td></tr><tr class="switch-slider-row"><td><div style="display: none;" data-i18n="Drag Speed">Drag Speed</div></td><td><input id="Drag Speed_slider" style="width: 85%;" type="range" min="5" max="300" step="5"></td><td><input id="Drag Speed_stepper" style="width: 64px; display: none;" type="number" min="5" max="300" step="5"></td></tr><tr class="logical-group"><td colspan="3"><div data-i18n="Mouse">Mouse</div></td></tr><tr class="switch-slider-row"><td><div data-i18n="Left handed mouse setup">Left-handed mouse setup</div></td><td><div data-i18n="Swaps the buttons on the mouse">Swaps the buttons on the mouse.</div></td><td><label class="switch"><input id="Left handed mouse setup_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Set pivot with left mouse button">Set pivot with left mouse button</div></td><td><div data-i18n="Change left-click behavior to set new pivot point (overrides select object)">Change left-click behavior to set new pivot point (overrides select object).</div></td><td><label class="switch"><input id="Set pivot with left mouse button_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Open properties on select">Open properties on select</div></td><td><div data-i18n="Always show properties upon selecting object">Always show properties upon selecting object.</div></td><td><label class="switch"><input id="Open properties on select_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Enable Gravity">Enable Gravity</div></td><td><div data-i18n="Toggles gravity while in first person mode">Toggles gravity while in first person mode</div></td><td><label class="switch"><input id="Enable Gravity_check" type="checkbox"><div class="slider"></div></label></td></tr></tbody></table><table class="settings-table adsk-lmv-tftable appearance" id="ViewerSettingsPanel0-0-appearance-table"><tbody style="width: 100%; display: table;"><tr class="logical-group"><td colspan="3"><div data-i18n="Visual Quality Optimization">Visual Quality Optimization</div></td></tr><tr class="switch-slider-row"><td><div data-i18n="Anti-aliasing">Anti-aliasing</div></td><td><div data-i18n="Remove jagged edges from lines">Remove jagged edges from lines.</div></td><td><label class="switch"><input id="Anti-aliasing_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Ambient shadows">Ambient shadows</div></td><td><div data-i18n="Improve shading of occluded surfaces">Improve shading of occluded surfaces.</div></td><td><label class="switch"><input id="Ambient shadows_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Ground shadow">Ground shadow</div></td><td><div data-i18n="Add simulated ground surface shadows">Add simulated ground surface shadows.</div></td><td><label class="switch"><input id="Ground shadow_check" type="checkbox"><div class="slider"></div></label></td></tr><tr class="switch-slider-row"><td><div data-i18n="Ground reflection">Ground reflection</div></td><td><div data-i18n="Add simulated ground surface reflections">Add simulated ground surface reflections.</div></td><td><label class="switch"><input id="Ground reflection_check" type="checkbox"><div class="slider"></div></label></td></tr></tbody></table><table class="settings-table adsk-lmv-tftable environment" id="ViewerSettingsPanel0-0-environment-table"><tbody style="width: 100%; display: table;"></tbody></table></div><div class="docking-panel-container-solid-color-b restore-defaults-container"><div class="docking-panel-tertiary-button" data-i18n="Restore all default settings">Restore all default settings</div></div></div><div class="docking-panel-footer"><div class="docking-panel-footer-resizer"></div><div class="docking-panel-version-label">v7.20.1</div></div></div><div class="docking-panel" id="HeatmapPanel" style="left: 220px; top: 260px; width: 320px; height: 160px; display: none;"><div class="docking-panel-title" data-i18n="Heatmaps">Heatmaps</div><div class="docking-panel-close"></div><div class="docking-panel-footer"><div class="docking-panel-footer-resizer"></div></div><div class="docking-panel-scroll docking-panel-container-solid-color-a right" id="HeatmapPanel-scroll-container" style="height: calc(-70px + 100%);"><table class="adsk-lmv-tftable"><tbody><tr class="switch-slider-row"><td><div data-i18n="Intensity">Intensity</div></td><td><input id="Intensity_slider" style="width: 85%;" type="range" min="0" max="100" step="1"></td><td><input id="Intensity_stepper" style="width: 64px;" type="number" min="0" max="100" step="1"></td></tr><tr><td><div data-i18n="Type">Type</div></td><td style="padding-right: 5px; padding-left: 5px;"><select class="option-drop-down" id="Type_dropdown"><option value="0" data-i18n="Issue Frequency">Issue Frequency</option><option value="1" data-i18n="Time to Next Schedule">Time to Next Schedule</option><option value="2" data-i18n="Average Cost">Average Cost</option></select></td></tr></tbody></table></div></div><div class="message-panel docking-panel focal-length docking-panel-container-solid-color-b" style="visibility: hidden;"><table><tbody><tr><td class="name" data-i18n="Focal Length">Focal length</td><td class="value"></td></tr></tbody></table></div><div class="docking-panel model-structure-panel" id="ViewerModelStructurePanel" style="display: none;"><div class="docking-panel-title" data-i18n="Browser">Browser</div><div class="docking-panel-close"></div><div class="docking-panel-footer"><div class="docking-panel-footer-resizer"></div></div><div class="docking-panel-scroll docking-panel-container-solid-color-a left" id="ViewerModelStructurePanel-scroll-container" style="height: calc(-104px + 100%); overflow-x: hidden;"></div><div class="adsk-control adsk-searchbox empty" id="ViewerModelStructurePanel-Searchbox"><div class="docking-panel adsk-search-results" style="display: none;"><div class="docking-panel-scroll docking-panel-container-solid-color-b"><div class="adsk-search-results-scrolling-panel"><div class="no-results-container" style="display: none;"><div class="no-results-title" data-i18n="No Results">No Results</div><div class="no-results-description" data-i18n="Try another term">Please try searching another term</div></div></div></div><div class="docking-panel-footer"><div class="docking-panel-footer-resizer"></div></div></div><input class="search-box docking-panel-delimiter-shadow" type="search" placeholder="Search" data-i18n="Search"><div class="search-box-icon"></div><div class="search-box-close"></div></div></div><div class="docking-panel property-panel" id="ViewerPropertyPanel" style="display: none;"><div class="docking-panel-title docking-panel-delimiter-shadow" data-i18n="Object Properties Loading">Object properties loading...</div><div class="docking-panel-close"></div><div class="docking-panel-footer"><div class="docking-panel-footer-resizer"></div></div><div class="docking-panel-scroll docking-panel-container-solid-color-a right" id="ViewerPropertyPanel-scroll-container" style="height: calc(-70px + 100%);"><div class="treeview"></div></div></div><div class="viewcubeWrapper"><div class="viewcube" style="display: block; opacity: 0.5;"><canvas width="212" height="212" style="width: 170px; height: 170px;"></canvas></div><div class="homeViewWrapper"></div></div><div class="docking-panel calibration-panel" id="calibration-panel" style="left: 0px; top: 0px; display: none;"><div class="docking-panel-title" data-i18n="Calibration">Calibration</div><div class="docking-panel-close"></div><div class="docking-panel-scroll docking-panel-container-solid-color-a right" id="calibration-panel-scroll-container" style="height: calc(-40px + 100%);"><div><table class="adsk-lmv-tftable calibration-table"><tbody><tr><td><div data-i18n="Define Size">Define Size</div></td><td><input class="docking-panel-textbox" autofocus="" type="text"></td></tr><tr><td><div data-i18n="Unit type">Unit type</div></td><td style="padding-right: 5px; padding-left: 5px;"><select class="option-drop-down" id="Unit type_dropdown"><option value="0" data-i18n="Feet and fractional inches">Feet and fractional inches</option><option value="1" data-i18n="Feet and decimal inches">Feet and decimal inches</option><option value="2" data-i18n="Meters">Meters</option><option value="3" data-i18n="Centimeters">Centimeters</option><option value="4" data-i18n="Millimeters">Millimeters</option></select></td></tr></tbody></table><div class="docking-panel-primary-button calibration-button" data-i18n="Set Calibration">Set Calibration</div></div></div></div></div></div><div id="sidebar"><ul class="nav nav-pills nav-fill mb-3" id="sidebar-pills" role="tablist"><li class="nav-item"><a class="nav-link active" id="performance-tab" role="tab" aria-selected="true" aria-controls="performance" href="#performance" data-toggle="pill">Performance</a></li><li class="nav-item"><a class="nav-link" id="maintenance-tab" role="tab" aria-selected="false" aria-controls="maintenance" href="#maintenance" data-toggle="pill">Maintenance</a></li><li class="nav-item"><a class="nav-link" id="procurement-tab" role="tab" aria-selected="false" aria-controls="procurement" href="#procurement" data-toggle="pill">Procurement</a></li></ul><div class="tab-content" id="sidebar-pills-content"><div class="tab-pane fade show active" id="performance" role="tabpanel" aria-labelledby="performance-tab"><ul class="nav nav-tabs mb-3 nav-fill" id="performance-tabs" role="tablist"><li class="nav-item"><a class="nav-link active" id="performance-general-tab" role="tab" aria-selected="false" aria-controls="performance-general" href="#performance-general" data-toggle="tab">General</a></li><li class="nav-item"><a class="nav-link" id="performance-part-tab" role="tab" aria-selected="true" aria-controls="performance-part" href="#performance-part" data-toggle="tab">Part</a></li></ul><div class="tab-content" id="procurement-tabs-content"><div class="tab-pane fade show active" id="performance-general" role="tabpanel" aria-labelledby="performance-general-tab"><div class="chartjs-size-monitor" style="left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; visibility: hidden; position: absolute; z-index: -1; pointer-events: none;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div><div class="chartjs-size-monitor" style="left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; visibility: hidden; position: absolute; z-index: -1; pointer-events: none;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div><h5>Engine Speed</h5><canvas width="283" height="141" class="chartjs-render-monitor" id="engine-speed-chart" style="width: 227px; height: 113px; display: block;"></canvas><h5>Engine Vibrations</h5><canvas width="283" height="141" class="chartjs-render-monitor" id="engine-vibrations-chart" style="width: 227px; height: 113px; display: block;"></canvas></div><div class="tab-pane fade" id="performance-part" role="tabpanel" aria-labelledby="performance-part-tab"><div class="alert alert-secondary">Select a single part in the 3D view</div><h5>Current Temperature</h5><svg xmlns="http://www.w3.org/2000/svg" id="part-current-temperature" style="display: none;" width="250" height="100"><defs><mask id="gauge-mask"><circle fill="white" cx="125" cy="100" r="75" /><circle fill="black" cx="125" cy="100" r="50" /></mask></defs><polygon fill="green" mask="url(&quot;#gauge-mask&quot;)" points="125,100 0,100 0,0" /><polygon fill="orange" mask="url(&quot;#gauge-mask&quot;)" points="125,100 0,0 250,0" /><polygon fill="red" mask="url(&quot;#gauge-mask&quot;)" points="125,100 250,0 250,100" /><text fill="gray" x="25" y="100">0°</text><text fill="gray" x="40" y="50">25°</text><text fill="gray" x="190" y="50">75°</text><text fill="gray" x="210" y="100">100°</text><polygon id="gauge-needle" fill="black" transform="rotate(14 100 100)" points="125,105 120,100 100,25 130,100" /></svg><h5>Temperature History</h5><canvas width="0" height="0" class="chartjs-render-monitor" id="part-temperatures-chart" style="width: 0px; height: 0px; display: none;"></canvas><form id="temperature-alert-form" style="display: none;"><h5>Temperature Alert</h5><div class="row mb-2"><label class="col-sm-2 col-form-label" for="temperature-alert-part">Part #</label><div class="col-sm-2"><input class="form-control-plaintext" id="temperature-alert-part" type="text" readonly="" value="123"></div><label class="col-sm-4 col-form-label" for="temperature-alert-max">Max Temp [C]</label><div class="col-sm-4"><input class="form-control" id="temperature-alert-max" type="text" value=""></div></div><button class="btn btn-primary mr-2">Set</button><button class="btn btn-secondary">Clear</button></form></div></div></div><div class="tab-pane fade" id="maintenance" role="tabpanel" aria-labelledby="maintenance-tab"><ul class="nav nav-tabs mb-3 nav-fill" id="maintenance-tabs" role="tablist"><li class="nav-item"><a class="nav-link active" id="maintenance-revisions-tab" role="tab" aria-selected="true" aria-controls="maintenance-revisions" href="#maintenance-revisions" data-toggle="tab">Revisions</a></li><li class="nav-item"><a class="nav-link" id="maintenance-issues-tab" role="tab" aria-selected="false" aria-controls="maintenance-issues" href="#maintenance-issues" data-toggle="tab">Issues</a></li><li class="nav-item"><a class="nav-link" id="maintenance-statistics-tab" role="tab" aria-selected="false" aria-controls="maintenance-statistics" href="#maintenance-statistics" data-toggle="tab">Statistics</a></li><li class="nav-item"><a class="nav-link" id="maintenance-instructions-tab" role="tab" aria-selected="false" aria-controls="maintenance-instructions" href="#maintenance-instructions" data-toggle="tab">Docs</a></li></ul><div class="tab-content" id="maintenance-tabs-content"><div class="tab-pane fade show active" id="maintenance-revisions" role="tabpanel" aria-labelledby="maintenance-revisions-tab"><h5>Revision History</h5><table class="table table-hover table-sm" id="revisions"><thead><tr><th scope="col">Date</th><th scope="col">Part #</th><th scope="col">Reviewed By</th><th scope="col">Result</th></tr></thead><tbody><tr>
+    
+                    <th scope="row">16/1/2020</th>
+                    <td><a class="part-link" href="#">1469</a></td>
+                    <td>Sherbaum Valery</td>
+                    <td style="color: green;">Good</td>
+                </tr><tr>
+                    <th scope="row">18/1/2020</th>
+                    <td><a class="part-link" href="#">1375</a></td>
+                    <td>Wilbert Awdry</td>
+                    <td style="color: red;">Bad</td>
+                </tr><tr>
+                    <th scope="row">18/1/2020</th>
+                    <td><a class="part-link" href="#">1375</a></td>
+                    <td>Klaus Hünecke</td>
+                    <td style="color: green;">Good</td>
+                </tr><tr>
+                    <th scope="row">23/1/2020</th>
+                    <td><a class="part-link" href="#">1375</a></td>
+                    <td>John Golley</td>
+                    <td style="color: green;">Good</td>
+                </tr><tr>
+                    <th scope="row">27/1/2020</th>
+                    <td><a class="part-link" href="#">5</a></td>
+                    <td>Wilbert Awdry</td>
+                    <td style="color: green;">Good</td>
+                </tr></tbody></table><nav><ul class="pagination justify-content-center"><li class="page-item active"><a class="page-link" href="#">1</a></li><li class="page-item "><a class="page-link" href="#">2</a></li><li class="page-item "><a class="page-link" href="#">3</a></li><li class="page-item "><a class="page-link" href="#">4</a></li><li class="page-item "><a class="page-link" href="#">5</a></li><li class="page-item "><a class="page-link" href="#">6</a></li><li class="page-item "><a class="page-link" href="#">7</a></li><li class="page-item "><a class="page-link" href="#">8</a></li><li class="page-item "><a class="page-link" href="#">9</a></li><li class="page-item "><a class="page-link" href="#">10</a></li><li class="page-item "><a class="page-link" href="#">11</a></li><li class="page-item "><a class="page-link" href="#">12</a></li><li class="page-item "><a class="page-link" href="#">13</a></li><li class="page-item "><a class="page-link" href="#">14</a></li><li class="page-item "><a class="page-link" href="#">15</a></li><li class="page-item "><a class="page-link" href="#">16</a></li><li class="page-item "><a class="page-link" href="#">17</a></li><li class="page-item "><a class="page-link" href="#">18</a></li><li class="page-item "><a class="page-link" href="#">19</a></li><li class="page-item "><a class="page-link" href="#">20</a></li><li class="page-item "><a class="page-link" href="#">21</a></li><li class="page-item "><a class="page-link" href="#">22</a></li><li class="page-item "><a class="page-link" href="#">23</a></li><li class="page-item "><a class="page-link" href="#">24</a></li><li class="page-item "><a class="page-link" href="#">25</a></li><li class="page-item "><a class="page-link" href="#">26</a></li></ul></nav><h5>New Revision</h5><form id="revision-form"><div class="row"><label class="col-sm-2 col-form-label" for="revision-part">Part #</label><div class="col-sm-10"><input class="form-control-plaintext" id="revision-part" type="text" readonly="" value="123"></div></div><div class="row"><label class="col-sm-2 col-form-label" for="revision-status">Status</label><div class="col-sm-10"><select class="form-control form-control-sm" id="revision-status"><option>Good</option><option>Bad</option></select></div></div><div class="row"><label class="col-sm-2 col-form-label" for="revision-author">Author</label><div class="col-sm-10"><select class="form-control form-control-sm" id="revision-author"><option>Sherbaum Valery</option><option>Erenburg Vladimir</option><option>John Golley</option><option>Wilbert Awdry</option><option>Bill Gunston</option><option>Klaus Hünecke</option><option>Irwin E. Treager</option></select></div></div><div class="form-group"><label for="revision-description">Recommended</label><select class="form-control form-control-sm" id="revision-description"><option>Repair</option><option>Replace</option><option>Discard</option><option>Change</option></select></div><button disabled="disabled" class="btn btn-primary btn-block" type="submit">Submit</button></form><div tabindex="-1" class="modal fade" id="revision-modal" role="dialog" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-body"><p>...</p></div></div></div></div></div><div class="tab-pane fade" id="maintenance-issues" role="tabpanel" aria-labelledby="maintenance-issues-tab"><h5>Existing Issues</h5><table class="table table-hover table-sm" id="issues"><thead><tr><th scope="col">Date</th><th scope="col">Part #</th><th scope="col">Author</th><th scope="col">Text</th></tr></thead><tbody><tr>
+                    <th scope="row">16/1/2020</th>
+                    <td><a class="part-link" href="#">1469</a></td>
+                    <td>Sherbaum Valery</td>
+                    <td>Minor</td>
+                </tr><tr>
+                    <th scope="row">16/1/2020</th>
+                    <td><a class="part-link" href="#">1124</a></td>
+                    <td>John Golley</td>
+                    <td>Urgent</td>
+                </tr><tr>
+                    <th scope="row">18/1/2020</th>
+                    <td><a class="part-link" href="#">1375</a></td>
+                    <td>Sherbaum Valery</td>
+                    <td>Major</td>
+                </tr><tr>
+                    <th scope="row">22/1/2020</th>
+                    <td><a class="part-link" href="#">5</a></td>
+                    <td>John Golley</td>
+                    <td>Urgent</td>
+                </tr><tr>
+                    <th scope="row">24/1/2020</th>
+                    <td><a class="part-link" href="#">5</a></td>
+                    <td>Klaus Hünecke</td>
+                    <td>Minor</td>
+                </tr></tbody></table><nav><ul class="pagination justify-content-center"><li class="page-item active"><a class="page-link" href="#">1</a></li><li class="page-item "><a class="page-link" href="#">2</a></li><li class="page-item "><a class="page-link" href="#">3</a></li><li class="page-item "><a class="page-link" href="#">4</a></li><li class="page-item "><a class="page-link" href="#">5</a></li><li class="page-item "><a class="page-link" href="#">6</a></li><li class="page-item "><a class="page-link" href="#">7</a></li><li class="page-item "><a class="page-link" href="#">8</a></li><li class="page-item "><a class="page-link" href="#">9</a></li><li class="page-item "><a class="page-link" href="#">10</a></li><li class="page-item "><a class="page-link" href="#">11</a></li><li class="page-item "><a class="page-link" href="#">12</a></li><li class="page-item "><a class="page-link" href="#">13</a></li><li class="page-item "><a class="page-link" href="#">14</a></li></ul></nav><h5>New Issue</h5><form id="issue-form"><div class="row mb-2"><label class="col-sm-2 col-form-label" for="issue-part">Part #</label><div class="col-sm-10"><input class="form-control-plaintext" id="issue-part" type="text" readonly="" value="123"></div></div><div class="row mb-2"><label class="col-sm-2 col-form-label" for="issue-title">Type</label><div class="col-sm-10"><select class="form-control form-control-sm" id="issue-title"><option>Minor</option><option>Major</option><option>Urgent</option><option>Critical</option></select></div></div><div class="row mb-2"><label class="col-sm-2 col-form-label" for="issue-author">Author</label><div class="col-sm-10"><select class="form-control form-control-sm" id="issue-author"><option>Sherbaum Valery</option><option>Erenburg Vladimir</option><option>John Golley</option><option>Wilbert Awdry</option><option>Bill Gunston</option><option>Klaus Hünecke</option><option>Irwin E. Treager</option></select></div></div><div class="row mb-2"><label class="col-sm-1 col-form-label" for="issue-position-x">X</label><div class="col-sm-3"><input class="form-control" id="issue-position-x" type="text" value="0.0"></div><label class="col-sm-1 col-form-label" for="issue-position-y">Y</label><div class="col-sm-3"><input class="form-control" id="issue-position-y" type="text" value="0.0"></div><label class="col-sm-1 col-form-label" for="issue-position-z">Z</label><div class="col-sm-3"><input class="form-control" id="issue-position-z" type="text" value="0.0"></div></div><button disabled="disabled" class="btn btn-primary btn-block" type="submit">Submit</button></form><div tabindex="-1" class="modal fade" id="issue-modal" role="dialog" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-body"><p>...</p></div></div></div></div></div><div class="tab-pane fade" id="maintenance-statistics" role="tabpanel" aria-labelledby="maintenance-statistics-tab"><div class="alert alert-secondary">Select a single part in the 3D view</div><h5>Issues Reported in Last 6 Months</h5><canvas width="0" height="0" class="chartjs-render-monitor" id="revision-stats" style="width: 0px; height: 0px; display: none;"></canvas></div><div class="tab-pane fade" id="maintenance-instructions" role="tabpanel" aria-labelledby="maintenance-instructions-tab"><div class="alert alert-secondary">Select a single part in the 3D view</div><h5>Maintenance Instructions</h5><embed src="" type="application/pdf"><footer class="blockquote-footer">Source:<cite>https://www.researchgate.net/publication/242412117</cite></footer><h5>Specifications</h5><div><div id="viewer2d"></div></div><footer class="blockquote-footer">Source:<cite>https://www.aircontrolindustries.com</cite></footer></div></div></div><div class="tab-pane fade" id="procurement" role="tabpanel" aria-labelledby="procurement-tab"><ul class="nav nav-tabs mb-3 nav-fill" id="procurement-tabs" role="tablist"><li class="nav-item"><a class="nav-link active" id="procurement-purchases-tab" role="tab" aria-selected="false" aria-controls="procurement-purchases" href="#procurement-purchases" data-toggle="tab">Purchases</a></li><li class="nav-item"><a class="nav-link" id="procurement-stats-tab" role="tab" aria-selected="true" aria-controls="procurement-stats" href="#procurement-stats" data-toggle="tab">Statistics</a></li></ul><div class="tab-content" id="procurement-tabs-content"><div class="tab-pane fade show active" id="procurement-purchases" role="tabpanel" aria-labelledby="procurement-purchases-tab"><h5>Purchase History</h5><table class="table table-hover table-sm" id="purchases"><thead><tr><th scope="col">Date</th><th scope="col">Part #</th><th scope="col">Supplier</th><th scope="col">Price</th></tr></thead><tbody><tr>
+                    <th scope="row">14/1/2020</th>
+                    <td><a class="part-link" href="#">1124</a></td>
+                    <td>Foo Inc.</td>
+                    <td>$98.5</td>
+                </tr><tr>
+                    <th scope="row">16/1/2020</th>
+                    <td><a class="part-link" href="#">1527</a></td>
+                    <td>Baz GmbH.</td>
+                    <td>$79.56</td>
+                </tr><tr>
+                    <th scope="row">16/1/2020</th>
+                    <td><a class="part-link" href="#">1124</a></td>
+                    <td>Foo Inc.</td>
+                    <td>$47.41</td>
+                </tr><tr>
+                    <th scope="row">18/1/2020</th>
+                    <td><a class="part-link" href="#">1375</a></td>
+                    <td>Bar Ltd.</td>
+                    <td>$90.55</td>
+                </tr><tr>
+                    <th scope="row">29/1/2020</th>
+                    <td><a class="part-link" href="#">5</a></td>
+                    <td>Bar Ltd.</td>
+                    <td>$76.99</td>
+                </tr></tbody></table><nav><ul class="pagination justify-content-center"><li class="page-item active"><a class="page-link" href="#">1</a></li><li class="page-item "><a class="page-link" href="#">2</a></li><li class="page-item "><a class="page-link" href="#">3</a></li><li class="page-item "><a class="page-link" href="#">4</a></li><li class="page-item "><a class="page-link" href="#">5</a></li><li class="page-item "><a class="page-link" href="#">6</a></li><li class="page-item "><a class="page-link" href="#">7</a></li><li class="page-item "><a class="page-link" href="#">8</a></li><li class="page-item "><a class="page-link" href="#">9</a></li><li class="page-item "><a class="page-link" href="#">10</a></li><li class="page-item "><a class="page-link" href="#">11</a></li><li class="page-item "><a class="page-link" href="#">12</a></li><li class="page-item "><a class="page-link" href="#">13</a></li></ul></nav><h5>New Purchase</h5><form id="purchase-form"><div class="row"><label class="col-sm-2 col-form-label" for="purchase-part">Part #</label><div class="col-sm-10"><input class="form-control-plaintext" id="purchase-part" type="text" readonly="" value="123"></div></div><div class="row"><label class="col-sm-2 col-form-label" for="purchase-supplier">Supplier</label><div class="col-sm-10"><select class="form-control form-control-sm" id="purchase-supplier"><option>Foo Inc.</option><option>Bar Ltd.</option><option>Baz GmbH.</option></select></div></div><div class="row"><label class="col-sm-2 col-form-label" for="purchase-price">Price</label><div class="col-sm-10"><input class="form-control-plaintext" id="purchase-price" type="text" readonly="" value="$0.00"></div></div><button disabled="disabled" class="btn btn-primary btn-block" type="submit">Submit</button></form><div tabindex="-1" class="modal fade" id="purchase-modal" role="dialog" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-body"><p>...</p></div></div></div></div></div><div class="tab-pane fade" id="procurement-stats" role="tabpanel" aria-labelledby="procurement-stats-tab"><div class="alert alert-secondary">Select a single part in the 3D view</div><h5>Part price over time</h5><canvas width="0" height="0" class="chartjs-render-monitor" id="purchase-stats" style="width: 0px; height: 0px; display: none;"></canvas></div></div></div></div></div><script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"></script><script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"></script><script src="/scripts/performance.js"></script><script src="/scripts/maintenance.js"></script><script src="/scripts/procurement.js"></script><script src="/scripts/extensions/heatmap.js"></script><script src="/scripts/extensions/issues.js"></script><script src="/scripts/extensions/animation.js"></script><script src="/scripts/main.js"></script></div></body></html>
